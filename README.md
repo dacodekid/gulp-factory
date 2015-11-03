@@ -29,7 +29,7 @@ Your plugins could be either a ```module``` that takes its own ```options```
 ```javascript
 const factory = require('gulp-factory');
 
-module.exports = (options) {
+module.exports = (options) => {
 
   function pluginFunction(file, encodee) {
     // body...
