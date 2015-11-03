@@ -1,0 +1,47 @@
+{
+  "name": "gulp-factory",
+  "version": "0.2.1",
+  "description": "a factory to create instant gulp-plugins and **enforcing gulp plugin guidelines",
+  "main": "index.js",
+  "scripts": {
+    "test:mocha": "mocha test.js -w",
+    "test:cover": "istanbul cover _mocha -- -R spec test.js",
+    "test": "npm run test:mocha",
+    "start": "npm run test --silent"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dacodekid/gulp-factory.git"
+  },
+  "keywords": [
+    "gulpplugin",
+    "gulp",
+    "gulpplugin-guideline-enforcer",
+    "gulpplugin-wrapper",
+    "gulpplugin-factory",
+    "gulp-factory"
+  ],
+  "author": "dacodekid",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dacodekid/gulp-factory/issues"
+  },
+  "homepage": "https://github.com/dacodekid/gulp-factory#readme",
+  "devDependencies": {
+    "chai": "^3.4.0",
+    "istanbul": "^0.4.0",
+    "mocha": "^2.3.3"
+  },
+  "dependencies": {
+    "gulp-util": "^3.0.7",
+    "lodash": "^3.10.1",
+    "through2": "^2.0.0"
+  },
+  "xo": {
+    "fix": true,
+    "envs": [
+      "node",
+      "mocha"
+    ]
+  }
+}
