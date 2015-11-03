@@ -92,7 +92,7 @@ describe('Factory will...', () => {
     }, {
       bufferSupport: true
     });
-    
+
     plugin.write(fixture(new Buffer('Lorem ipsum')))
     plugin.once('data', file => {
       expect(file.contents.toString()).to.equal('changed from plugin');
@@ -100,84 +100,3 @@ describe('Factory will...', () => {
     plugin.end();
   });
 });
-// const it = require('tape');
-// const factory = require('./');
-// const File = require('gulp-util').File;
-//
-// function fixture(content) {
-//   return new File({
-//     contents: content
-//   })
-// }
-//
-// // Main factory wrapper
-// it('a NAME argument', should => {
-//   should.throws(() => {
-//     factory()
-//   }, /Pass a valid plugin name/, 'shouldn\'t like empty argument');
-//
-//   should.throws(() => {
-//     factory('')
-//   }, /Pass a valid plugin name/, 'shouldn\'t like empty string');
-//
-//   should.throws(() => {
-//     factory('');
-//   }, /Pass a valid plugin name/, 'shouldn\'t like whitespace string');
-//
-//   should.throws(() => {
-//     factory({})
-//   }, /Pass a valid plugin name/, 'shouldn\'t like any other object type');
-//
-//   should.throws(() => {
-//     factory('grunt-');
-//   }, /Plugin name must always starts with "gulp-"/, 'must always starts with "gulp-"');
-//
-//   should.throws(() => {
-//     factory('gulp-');
-//   }, /Pass a valid plugin function/, 'all is well... all is well');
-//
-//   should.end();
-// });
-//
-
-// it('a PLUGIN argument', should => {
-//   should.throws(() => {
-//     factory('gulp-', {});
-//   }, /Pass a valid plugin function/, 'must be a function');
-//
-//   should.doesNotThrow(() => {
-//     factory('gulp-', ()=>{});
-//   }, /No error should through/, 'all is well... all is well');
-//
-//   should.doesNotThrow(() => {
-//     factory('gulp-', ()=>{}, {
-//       showStack: true
-//     });
-//   }, /Just for code-coverage/, 'said `all is well` already. TWICE');
-//
-//   should.end();
-// });
-//
-// it('throw', should => {
-//   const stream = factory('gulp-test', () => {
-//   }, {bufferSupport: false});
-//
-//   should.throws(() => {
-//     stream.write(fixture(new Buffer('Lorem ipsum')));
-//   }, /Buffer not supported/, 'error for buffer if not supported');
-//   should.end();
-// });
-//
-// it('should return a vinyl file', should => {
-//   const stream = factory('gulp-test', file => {
-//     file.contents = new Buffer('changed');
-//   }, {bufferSupport: true})
-//
-//   stream.write(fixture(new Buffer('Lorem ipsum')));
-//   stream.once('data', file => {
-//     should.equals(file.contents.toString(), 'changed');
-//   });
-//   // stream.end();
-//
-//   should.end();
-// });
