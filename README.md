@@ -129,4 +129,4 @@ Whether your plugin supports ```buffer```. Throws __PluginError__ if the ```file
 
 ##### homeMade (boolean, default : false)
 
-By default, ```gulp-factory``` operates in ```factory``` mode: which requires all your plugins prefixed with ```gulp-```. However if you would just like to test your plugins on your local repository or wrapping your existing functions as gulp-plugins and have no plan to list them under [gulp plugin registry](http://gulpjs.com/plugins/), just set ````homeMade: true``` and ```gulp-factory``` won't enforce ```gulp-``` prefix.
+By default, ```gulp-factory``` operates in ```factory``` mode: which requires all your plugins prefixed with ```gulp-```. However if you would just like to test your plugins on your local repository or wrapping your existing functions as gulp-plugins and have no plan to list them under [gulp plugin registry](http://gulpjs.com/plugins/), just set ```homeMade: true``` and ```gulp-factory``` won't enforce ```gulp-``` prefix.
