@@ -110,8 +110,7 @@ In case if you have to throw an error, just ```throw ``` it as above and ```gulp
 }
 ```
 
-##### showStack (boolean)
-default : false
+##### showStack (boolean, default : false)
 
 Refer [gulp-util's PluginError](https://github.com/gulpjs/gulp-util#new-pluginerrorpluginname-message-options)
 
