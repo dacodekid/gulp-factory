@@ -30,37 +30,58 @@ npm install --save gulp-factory
 ```
 
 ## Usage
-Your plugins could be either a ```module``` that takes its own ```options```
+Your plugins could be either a ```module``` or just a ```function```.
+For example, you only need the below code to create a **completely working ```front-matter``` gulp-plugin**.
 ```javascript
+// index.js
+const gm = require('gray-matter');
 const factory = require('gulp-factory');
 
-module.exports = (options) => {
+module.exports = options => {
+  options = options || {};
 
-  function pluginFunction(file, encodee) {
-    // body...
+  function pluginFn(file, encode) {
+    const raw = gm(file.contents.toString(encode), options);
+    file.yml = raw.data || {};
+    file.contents = new Buffer(raw.content);
   }
 
-  factory('gulp-pluginName', pluginFunction, {
-    bufferSupport: true,
-    streamSupport: false  
-  });
+  return factory('gulpfactory-gray-matter', pluginFn, { homeMade: true });
 };
 ```
 
-or just a ```function```
+Then from your ```gulpfile.js```,
+```javascript
+// gulpfile.js
+const gulp = require('gulp');
+const grayMatter = require('./');
+
+gulp.task('default', function yaml() {
+  return gulp.src('./fixtures/*.md')
+    .pipe(grayMatter({delims: '---'}))
+    .pipe(gulp.dest('./fixtures/output'));
+})
+```
+
+or just turn any of your ```function``` into a ```gulp-plugin```
 
 ```javascript
+// gulpfile.js
 const gulp = require('gulp');
+const gm = require('gray-matter');
 const factory = require('gulp-factory');
 
-const plugin = function pluginFn(file, encode) {
-  // body
+function pluginFn(file, encode) {
+  const raw = gm(file.contents.toString(encode), {delims: '---'});
+  file.yml = raw.data || {};
+  file.contents = new Buffer(raw.content);
 }
 
-gulp.task('defalut',
-  factory('pluginName',pluginFn), {
-    homeMade: true
-  });
+gulp.task('default', function yaml() {
+  return gulp.src('./fixtures/*.md')
+    .pipe(factory('gulpfactory-gray-matter', pluginFn, { homeMade: true }))
+    .pipe(gulp.dest('./fixtures/output'));
+})
 ```
 
 ## API
