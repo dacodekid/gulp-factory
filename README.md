@@ -1,5 +1,4 @@
 # gulp-factory
-<<<<<<< HEAD
 a factory to create instant gulp-plugins and **enforcing [gulp plugin guidelines](https://github.com/gulpjs/gulp/blob/master/docs/writing-a-plugin/guidelines.md)**.
 
 ---
@@ -17,6 +16,7 @@ Currently ```gulp-factory``` enforces / follows the following **[gulp plugin gui
 - (gpg 12) Uses modules from [gulp's recommended modules page](https://github.com/gulpjs/gulp/blob/master/docs/writing-a-plugin/recommended-modules.md)
 
 **TODO**
+
 The following guidelines could be covered as ```suggestions```
 - [ ] (gpg 4) Your plugin must be tested
 - [ ] (gpg 5) Add ```gulpplugin``` as a keyword in your ```package.json``` so you show up on our search
@@ -111,29 +111,22 @@ In case if you have to throw an error, just ```throw ``` it as above and ```gulp
 ```
 
 ##### showStack (boolean)
-__default : false__
+default : false
 
 Refer [gulp-util's PluginError](https://github.com/gulpjs/gulp-util#new-pluginerrorpluginname-message-options)
 
-##### showProperties (boolean)
-__default : true__
+##### showProperties (boolean, default : true)
 
 Refer [gulp-util's PluginError](https://github.com/gulpjs/gulp-util#new-pluginerrorpluginname-message-options)
 
-##### streamSupport (boolean)
-__default : false__
+##### streamSupport (boolean, default : false)
 
 Whether your plugin supports ```stream```. Throws __PluginError__ if the ```file``` is ```Stream```.
 
-##### bufferSupport (boolean)
-__default : true__
+##### bufferSupport (boolean, default : true)
 
 Whether your plugin supports ```buffer```. Throws __PluginError__ if the ```file``` is ```buffer```.
 
-##### homeMade (boolean)
-__default : false__
+##### homeMade (boolean, default : false)
 
 By default, ```gulp-factory``` operates in ```factory``` mode: which requires all your plugins prefixed with ```gulp-```. However if you would just like to test your plugins on your local repository or wrapping your existing functions as gulp-plugins and have no plan to list them under [gulp plugin registry](http://gulpjs.com/plugins/), just set ````homeMade: true``` and ```gulp-factory``` won't enforce ```gulp-``` prefix.
-=======
-a dictator factory for gulp-plugins
->>>>>>> 4c54226dd1c9edfb7b61b01569c731dd33b2c408
