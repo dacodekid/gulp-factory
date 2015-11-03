@@ -22,7 +22,7 @@ The following guidelines could be covered as ```suggestions```
 - [ ] **gpg 4.0**: Verify whether your plugin has ```test.js```
 - [ ] **gpg 5.0**: Verify whether your ```package.json``` has ```gulpplugin``` as a keyword
 - [ ] **gpg 13.0**: Verify whether your plugin requires ```gulp``` as a dependency or peerDependency
-- add more examples
+- [ ] add more examples
 
 ## Installation
 ```
