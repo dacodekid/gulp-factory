@@ -19,11 +19,15 @@ Currently ```gulp-factory``` enforces / follows the following **[gulp plugin gui
 **TODO**
 
 The following guidelines could be covered as ```suggestions```
-- [ ] [gpg 4] Verify whether your plugin has ```test.js```
-- [ ] [gpg 5] Verify whether your ```package.json``` has ```gulpplugin``` as a keyword
-- [ ] [gpg 13] Verify whether your plugin requires ```gulp``` as a dependency or peerDependency
-- [ ] add more examples
+- [gpg 4] Verify whether your plugin has ```test.js```
+- [gpg 5] Verify whether your ```package.json``` has ```gulpplugin``` as a keyword
+- [gpg 13] Verify whether your plugin requires ```gulp``` as a dependency or peerDependency
+- add more examples
 
+## Installation
+```
+npm install --save gulp-factory
+```
 
 ## Usage
 Your plugins could be either a ```module``` that takes its own ```options```
