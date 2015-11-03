@@ -8,20 +8,20 @@ Except its implementation code (wrapped inside ```through.obj(...)```), majority
 ## Features
 Currently ```gulp-factory``` enforces / follows the following **[gulp plugin guidelines (gpg)](https://github.com/gulpjs/gulp/blob/master/docs/writing-a-plugin/guidelines.md)** by default:
 
-- [gpg 6] Does not throw errors inside a stream
-- [gpg 7] Prefix any errors (uses [PluginError](https://github.com/gulpjs/gulp-util#new-pluginerrorpluginname-message-options)) with the name of your plugin
-- [gpg 8] Throws error if your plugin name doesn't prefixed with "gulp-" (if ```homeMade``` option set to ```true```, it won't)
-- [gpg 9.1] If ```file.contents``` is null (non-read), it ignores the file and pass it along
-- [gpg 9.2] If ```file.contents``` is a Stream and you don't support that (```streamSupport: false```), emits an error
-- [gpg 10] Does not pass the file object downstream until you are done with it
-- [gpg 12] Uses modules from [gulp's recommended modules page](https://github.com/gulpjs/gulp/blob/master/docs/writing-a-plugin/recommended-modules.md)
+- [x] **gpg  6.0**: Does not throw errors inside a stream
+- [x] **gpg  7.0**: Prefix any errors (uses [PluginError](https://github.com/gulpjs/gulp-util#new-pluginerrorpluginname-message-options)) with the name of your plugin
+- [x] **gpg  8.0**: Throws error if your plugin name doesn't prefixed with "gulp-" (if ```homeMade``` option set to ```true```, it won't)
+- [x] **gpg  9.1**: If ```file.contents``` is null (non-read), it ignores the file and pass it along
+- [x] **gpg  9.2**: If ```file.contents``` is a Stream and you don't support that (```streamSupport: false```), emits an error
+- [x] **gpg 10.0**: Does not pass the file object downstream until you are done with it
+- [x] **gpg 12.0**: Uses modules from [gulp's recommended modules
 
 **TODO**
 
 The following guidelines could be covered as ```suggestions```
-- [gpg 4] Verify whether your plugin has ```test.js```
-- [gpg 5] Verify whether your ```package.json``` has ```gulpplugin``` as a keyword
-- [gpg 13] Verify whether your plugin requires ```gulp``` as a dependency or peerDependency
+- [ ] **gpg 4.0**: Verify whether your plugin has ```test.js```
+- [ ] **gpg 5.0**: Verify whether your ```package.json``` has ```gulpplugin``` as a keyword
+- [ ] **gpg 13.0**: Verify whether your plugin requires ```gulp``` as a dependency or peerDependency
 - add more examples
 
 ## Installation
