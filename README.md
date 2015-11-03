@@ -7,21 +7,21 @@ Except its implementation code (wrapped inside ```through.obj(...)```), majority
 ## Features
 Currently ```gulp-factory``` enforces / follows the following **[gulp plugin guidelines (gpg)](https://github.com/gulpjs/gulp/blob/master/docs/writing-a-plugin/guidelines.md)** by default:
 
-- (gpg 6) Does not throw errors inside a stream
-- (gpg 7) Prefix any errors (uses [PluginError](https://github.com/gulpjs/gulp-util#new-pluginerrorpluginname-message-options)) with the name of your plugin
-- (gpg 8) Throws error if your plugin name doesn't prefixed with "gulp-" (if ```homeMade``` option set to ```true```, it won't)
-- (gpg 9.1) If ```file.contents``` is null (non-read), it ignores the file and pass it along
-- (gpg 9.2) If ```file.contents``` is a Stream and you don't support that (```streamSupport: false```), emits an error
-- (gpg 10) Does not pass the file object downstream until you are done with it
-- (gpg 12) Uses modules from [gulp's recommended modules page](https://github.com/gulpjs/gulp/blob/master/docs/writing-a-plugin/recommended-modules.md)
+- [gpg 6] Does not throw errors inside a stream
+- [gpg 7] Prefix any errors (uses [PluginError](https://github.com/gulpjs/gulp-util#new-pluginerrorpluginname-message-options)) with the name of your plugin
+- [gpg 8] Throws error if your plugin name doesn't prefixed with "gulp-" (if ```homeMade``` option set to ```true```, it won't)
+- [gpg 9.1] If ```file.contents``` is null (non-read), it ignores the file and pass it along
+- [gpg 9.2] If ```file.contents``` is a Stream and you don't support that (```streamSupport: false```), emits an error
+- [gpg 10] Does not pass the file object downstream until you are done with it
+- [gpg 12] Uses modules from [gulp's recommended modules page](https://github.com/gulpjs/gulp/blob/master/docs/writing-a-plugin/recommended-modules.md)
 
 **TODO**
 
 The following guidelines could be covered as ```suggestions```
-- [ ] (gpg 4) Your plugin must be tested
-- [ ] (gpg 5) Add ```gulpplugin``` as a keyword in your ```package.json``` so you show up on our search
-- [ ] (gpg 13) Do NOT require gulp as a dependency or peerDependency in your plugin
-- [ ] and more examples
+- [ ] [gpg 4] Verify whether your plugin has ```test.js```
+- [ ] [gpg 5] Verify whether your ```package.json``` has ```gulpplugin``` as a keyword
+- [ ] [gpg 13] Verify whether your plugin requires ```gulp``` as a dependency or peerDependency
+- [ ] add more examples
 
 
 ## Usage
@@ -99,7 +99,8 @@ function pluginFunction(file, encode) {
 ```
 In case if you have to throw an error, just ```throw ``` it as above and ```gulp-factory``` will wrap it with ```PluginError``` and prefix it with ```pluginName```.
 
-#### factoryOptions
+#### factoryOptions (optional)
+**Default values**
 ```javascript
 {
   showStack: false,

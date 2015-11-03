@@ -1,10 +1,10 @@
 {
   "name": "gulp-factory",
-  "version": "0.2.4",
+  "version": "0.2.6",
   "description": "a factory to create instant gulp-plugins and enforcing gulp plugin guidelines",
   "main": "index.js",
   "scripts": {
-    "test:mocha": "mocha test.js -w",
+    "test:mocha": "mocha test.js",
     "test:cover": "istanbul cover _mocha -- -R spec test.js",
     "test": "npm run test:mocha",
     "start": "npm run test --silent"
