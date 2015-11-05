@@ -28,7 +28,7 @@ module.exports = (pluginName, pluginFn, options) => {
     }
 
     // If it's not a homeMade plugin
-    // Does the name prefix 7ed with "gulp-"
+    // Does the name prefixed with "gulp-"
     if (!defOptions.homeMade && !_.startsWith(pluginName, 'gulp-')) {
       throw new Error('Plugin name must always starts with "gulp-"');
     }
@@ -73,3 +73,6 @@ module.exports = (pluginName, pluginFn, options) => {
     throw new PluginError(pluginName + ':', e, defOptions);
   }
 };
+
+// Expose gulp-util for convenience
+module.exports.gulpUtil = require('gulp-util');

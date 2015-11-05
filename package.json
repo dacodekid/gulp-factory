@@ -1,6 +1,6 @@
 {
   "name": "gulp-factory",
-  "version": "0.2.12",
+  "version": "0.3.1",
   "description": "a factory to create instant gulp-plugins and enforcing gulp plugin guidelines",
   "main": "index.js",
   "scripts": {
