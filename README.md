@@ -14,13 +14,13 @@ Currently `gulp-factory` enforces / follows the below **[gulp plugin guidelines 
 - [x] **gpg  9.1**: If `file.contents` is null (non-read), it ignores the file and pass it along
 - [x] **gpg  9.2**: If `file.contents` is a Stream and you don't support that (`streamSupport: false`), emits an error
 - [x] **gpg 10.0**: Does not pass the file object downstream until you are done with it
-- [x] **gpg 12.0**: Uses modules from [gulp's recommended modules
+- [x] **gpg 12.0**: Uses modules from gulp's recommended modules
 
 **TODO**: The following guidelines could be covered as `suggestions` or `warnings`
 - [ ] **gpg 4.0**: Verify whether your plugin has `test.js`
 - [ ] **gpg 5.0**: Verify whether your `package.json` has `gulpplugin` as a keyword
 - [ ] **gpg 13.0**: Verify whether your plugin requires `gulp` as a dependency or peerDependency
-- [ ] add more examples
+- [x] add more examples
 
 ## Installation
 ```sh
