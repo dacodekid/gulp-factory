@@ -64,7 +64,11 @@ module.exports = (pluginName, pluginFn, options) => {
         // until you are done with it
         done(null, file);
       } catch (e) {
-        throw new PluginError(pluginName + ':', e, defOptions);
+        // Guideline 06, 07.(1 & 2): Prefix any
+        // Errors with the name of your plugin
+        // Return the error to upstream pipeline so the correct
+        // Plugin name will be displayed
+        done(new PluginError(pluginName + ':', e, defOptions));
       }
     });
   } catch (e) {
