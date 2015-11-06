@@ -21,10 +21,21 @@ The following guidelines are covered as `warnings` (v 1.1.1).
 So, these warnings could be `false possitive`. If you don't want these warnings
 please disable warnings in `options` => `warnings: false`.
 
-- [x] **gpg 4.0**: Verify whether your plugin has `test.js`
-- [x] **gpg 5.0**: Verify whether your `package.json` has `gulpplugin` as a keyword
-- [x] **gpg 13.0**: Verify whether your plugin requires `gulp` as a dependency or peerDependency
-- [x] add more examples
+- [x] **gpg 4.0**: Verifies whether your `package.json` has `test` command
+- [x] **gpg 5.0**: Verifies whether your `package.json` has `gulpplugin` as a keyword
+- [x] **gpg 13.0**: Verifies whether your plugin requires `gulp` as a dependency or peerDependency in your `package.json`
+
+## Examples
+- [Examples](https://github.com/dacodekid/gulp-factory/tree/master/examples)
+**TODO** : Add More Examples
+
+
+
+- a `test` command exists in `scripts` section
+- a keyword `gulpplugin` exists in `keywords` section
+- a word `gulp` exists in `dependencies` or `peerDependencies` section
+
+and outputs just a `console.log` warning message. These warnings could be false positive. For example, the below will
 
 ## Installation
 ```sh
