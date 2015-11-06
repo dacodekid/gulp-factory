@@ -16,10 +16,14 @@ Currently `gulp-factory` enforces / follows the below **[gulp plugin guidelines 
 - [x] **gpg 10.0**: Does not pass the file object downstream until you are done with it
 - [x] **gpg 12.0**: Uses modules from gulp's recommended modules
 
-**TODO**: The following guidelines could be covered as `suggestions` or `warnings`
-- [ ] **gpg 4.0**: Verify whether your plugin has `test.js`
-- [ ] **gpg 5.0**: Verify whether your `package.json` has `gulpplugin` as a keyword
-- [ ] **gpg 13.0**: Verify whether your plugin requires `gulp` as a dependency or peerDependency
+The following guidelines are covered as `warnings` (v 1.1.1).
+> Note: The below gulp guidelines are covered by reading your app's package.json.
+So, these warnings could be `false possitive`. If you don't want these warnings
+please disable warnings in `options` => `warnings: false`.
+
+- [x] **gpg 4.0**: Verify whether your plugin has `test.js`
+- [x] **gpg 5.0**: Verify whether your `package.json` has `gulpplugin` as a keyword
+- [x] **gpg 13.0**: Verify whether your plugin requires `gulp` as a dependency or peerDependency
 - [x] add more examples
 
 ## Installation
@@ -137,7 +141,8 @@ Type: `object`, **optional**
   showProperties: true,
   streamSupport: false,
   bufferSupport: true,
-  homeMade: false
+  homeMade: false,
+  warnings: true
 }
 ```
 
@@ -163,13 +168,34 @@ Whether your plugin supports `stream`. Throws __PluginError__ if the `file` is `
 Type: `boolean`  
 Default: `true`
 
-Whether your plugin supports `buffer`. Throws __PluginError__ if the `file` is `buffer`.
+Whether your plugin supports `buffer`. Throws __PluginError__ if the `file` is `Buffer`.
 
 ##### homeMade
 Type: `boolean`  
 Default: `false`
 
 By default, `gulp-factory` operates in `factory` mode: which requires all your plugins prefixed with `gulp-`. However if you would just like to test your plugins on your local repository or wrapping your existing functions as gulp-plugins and have no plan to list them under [gulp plugin registry](http://gulpjs.com/plugins/), just set `homeMade: true` and `gulp-factory` won't enforce `gulp-` prefix.
+
+##### warnings
+Type: `boolean`  
+Default: `true`
+
+To cover gulp guidelines 4, 5 & 13, `gulp-factory` will try to load your plugin/app's `package.json` and checks whether :
+- a `test` command exists in `scripts` section
+- a keyword `gulpplugin` exists in `keywords` section
+- a word `gulp` exists in `dependencies` or `peerDependencies` section
+
+and outputs just a `console.log` warning message. These warnings could be false positive. For example, the below will not show a warning
+```json
+"test:mocha": "mocha *.js",
+"test": "npm run test:mocha"
+```
+but this one will.
+```json
+"test:mocha": "mocha *.js",
+```
+If you find these warnings less useful for your (home-made) plugins, please turn it off by setting `warnings: false`.
+
 
 ## gulpUtil
 From `v0.3.1, gulp-factory` exposes [gulp-util](https://github.com/gulpjs/gulp-util) for your plugins' convenience.

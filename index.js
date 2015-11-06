@@ -1,8 +1,12 @@
+/*eslint no-console: 0*/
+
 'use strict';
 
 const _ = require('lodash');
 const through = require('through2');
+const appRoot = require('app-root-path');
 const PluginError = require('gulp-util').PluginError;
+const chalk = require('gulp-util').colors;
 
 module.exports = (pluginName, pluginFn, options) => {
   let defOptions = {
@@ -10,7 +14,8 @@ module.exports = (pluginName, pluginFn, options) => {
     showProperties: true,
     streamSupport: false,
     bufferSupport: true,
-    homeMade: false
+    homeMade: false,
+    warnings: true
   };
 
   try {
@@ -37,6 +42,46 @@ module.exports = (pluginName, pluginFn, options) => {
     if (!_.isFunction(pluginFn)) {
       throw new Error('Pass a valid plugin function');
     }
+
+    // If warnings enabled,
+    // Read package.json and log warnings
+    if (defOptions.warnings) {
+      try {
+        const pkg = require(appRoot + '/package.json');
+        const warning = chalk.black.bgYellow;
+
+        // Guideline 5.0 : Add gulpplugin as a keyword in your package.json
+        // so you show up on gulp plugin website's search directory
+        if(!_.includes(pkg.keywords, 'gulpplugin')) {
+          console.log(warning('Warning: Keyword `gulpplugin` ' +
+                                'is not found in your `package.json`'));
+        }
+
+        // Guideline 13.0: Verify whether your plugin requires gulp
+        // as a dependency or peerDependency
+        if(_.includes(pkg.dependencies, 'gulp')) {
+          console.log(warning('Warning: `gulp` is listed as a dependency ' +
+                                'in your `package.json`'));
+        }
+
+        // or peerDependency
+        if(_.includes(pkg.peerDependencies, 'gulp')) {
+          console.log(warning('Warning: `gulp` is listed as a peer ' +
+                                'dependency in your `package.json`'));
+        }
+
+        // Guideline 4.0: Your plugin must be tested
+        // This is just a blunt checking. Could be false possitive
+        if(!pkg.scripts.test) {
+          console.log(warning('Warning: `test` command not found in your ' +
+                                '`package.json`. Have you write tests ' +
+                                'for your plugin?'));
+        }
+      } catch (e) {
+        throw e;
+      }
+    }
+
 
     // Return vinyl for next pipe
     return through.obj((file, encode, done) => {

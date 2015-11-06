@@ -95,8 +95,8 @@ describe('Factory will...', () => {
 
     plugin.once('data', file => {
       expect(file.contents.toString()).to.equal('changed from plugin');
-    })
-    plugin.write(fixture(new Buffer('Lorem ipsum')))
+    });
+    plugin.write(fixture(new Buffer('Lorem ipsum')));
     plugin.end();
   });
 });
