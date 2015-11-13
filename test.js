@@ -1,102 +1,137 @@
 'use strict';
 
-const chai = require('chai');
-const expect = chai.expect;
+const test = require('tape');
 const factory = require('./');
-const File = require('gulp-util').File;
+const File = factory.gulpUtil.File;
 const Stream = require('stream');
 
-describe('Validating arugments', () => {
-  it('throws for empty arguments', () => {
-    expect(() => {
-      factory();
-    }).to.throw('Pass a valid plugin name');
+function fixture(data) {
+  return new File({
+    contents: data
   });
+}
+test('factory object', assert => {
+  assert.equal(typeof factory.gulpUtil, 'object',
+    'should expose gulp-util module');
 
-  it('throws for empty string', () => {
-    expect(() => {
-      factory('');
-    }).to.throw('Pass a valid plugin name');
-  });
+  assert.throws(() => {
+    factory('');
+  },/Pass a valid option/, 'pass a valid option');
 
-  it('throws for whitespace string', () => {
-    expect(() => {
-      factory('  ');
-    }).to.throw('Pass a valid plugin name');
-  });
-
-  it('throws for non-string objects', () => {
-    expect(() => {
-      factory({});
-    }).to.throw('Pass a valid plugin name');
-  });
-
-  it('throws for invalid name', () => {
-    expect(() => {
-      factory('grunt-');
-    }).to.throw('Plugin name must always starts with "gulp-"');
-  });
-
-  it('will not throw for invalid name, if home-made mode enabled', () => {
-    expect(() => {
-      factory('g', () => {}, {homeMade: true});
-    }).not.to.throw(Error);
-  });
-
-  it('throws for empty plugin function', () => {
-    expect(() => {
-      factory('gulp-');
-    }).to.throw('Pass a valid plugin function');
-  });
-
-  it('throws for non-function argument', () => {
-    expect(() => {
-      factory('gulp-', {});
-    }).to.throw('Pass a valid plugin function');
-  });
+  assert.end();
 });
 
-describe('Factory will...', () => {
-  function fixture(content) {
-    return new File({
-      contents: content
+test('name value', assert => {
+  assert.throws(() => {
+    factory({
+      pluginName: ''
     });
-  }
+  }, /Pass a valid name/, 'pass a valid name');
 
-  it('pass the file if it is null', () => {
-    expect(() => {
-      factory('gulp-test', () => {})
-      .write(fixture(null));
-    }).not.to.throw(Error);
-  });
-
-  it('throw error for stream, if not supported', () => {
-    expect(() => {
-      factory('gulp-test', () => {}, {
-        streamSupport: false
-      }).write(fixture(new Stream()));
-    }).to.throw(/Stream not supported/);
-  });
-
-  it('throw error for buffer, if not supported', () => {
-    expect(() => {
-      factory('gulp-test', () => {}, {
-        bufferSupport: false
-      }).write(fixture(new Buffer('Lorem ipsum')));
-    }).to.throw(/Buffer not supported/);
-  });
-
-  it('ALL IS WELL, ALL IS WELL', () => {
-    const plugin = factory('gulp-test', file => {
-      file.contents = new Buffer('changed from plugin');
-    }, {
-      bufferSupport: true
+  assert.throws(() => {
+    factory({
+      pluginName: 'grunt-'
     });
+  }, /Name should start with gulp-/, 'name should start with gulp-');
 
-    plugin.once('data', file => {
-      expect(file.contents.toString()).to.equal('changed from plugin');
+  assert.doesNotThrow(() => {
+    factory({
+      pluginName: 'grunt-',
+      pluginFunction: () => {},
+      homeMade: true
     });
-    plugin.write(fixture(new Buffer('Lorem ipsum')));
+  }, /doesn't throw/, 'shoud not throw home-made plugin');
+
+  assert.end();
+});
+
+test('file object', assert => {
+  assert.doesNotThrow(() => {
+    factory({
+      pluginName: 'gulp-',
+      pluginFunction: () => {}
+    })
+    .write(fixture(null));
+  }, /does not throw/, 'will just pass a null file');
+
+  assert.throws(() => {
+    factory({
+      pluginName: 'gulp-',
+      pluginFunction: () => {}
+    })
+    .write(fixture(new Stream()));
+  }, /Stream not supported/, 'stream not supported');
+
+  assert.throws(() => {
+    factory({
+      pluginName: 'gulp-',
+      pluginFunction: () => {},
+      bufferSupport: false
+    })
+    .write(fixture(new Buffer('buff')));
+  }, /Buffer not supported/, 'buffer not supported');
+
+  assert.end();
+});
+
+test('plugin function', assert => {
+  assert.throws(() => {
+    factory({
+      pluginName: 'gulp-',
+      pluginFunction: {}
+    });
+  }, /Pass a valid plugin function/, 'pass a valid plugin function');
+
+  factory({
+    pluginName: 'gulp-test',
+    pluginFunction: (file, encode) => {
+      const content = file.contents.toString(encode) + ' gipsum';
+      file.contents = new Buffer(content);
+    }
+  })
+  .on('data', file => {
+    assert.equal(file.contents.toString(),
+      'Lorem ipsum gipsum', 'transform funtion should write data');
+  })
+  .write(fixture(new Buffer('Lorem ipsum')));
+
+  assert.end();
+});
+
+test('flush function', assert => {
+  assert.throws(() => {
+    factory({
+      pluginName: 'gulp-',
+      pluginFunction: () => {},
+      flushFunction: {}
+    });
+  }, /Pass a valid flush function/, 'pass a valid flush function');
+
+  // need a more meaningful tests
+  assert.throws(() => {
+    const plugin = factory({
+      pluginName: 'gulp-test',
+      pluginFunction: () => {},
+      flushFunction: () => {
+        throw new Error('Thrown from flush');
+      }
+    });
+    plugin.write(fixture(new Buffer('')));
     plugin.end();
-  });
+  }, /Thrown from flush/, 'thrown from flush');
+
+  assert.doesNotThrow(() => {
+    const plugin = factory({
+      pluginName: 'gulp-test',
+      pluginFunction: () => {},
+      flushFunction: () => {
+        //nothing up here. just passing
+      }
+    });
+    plugin.write(fixture(new Buffer('')));
+    plugin.end();
+  }, /Just passing through/, 'finish flushing if no error');
+
+
+  assert.end();
 });
