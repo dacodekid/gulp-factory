@@ -1,23 +1,24 @@
 /*eslint no-console: 0*/
 'use strict';
 
-const Err = require('gulp-util').PluginError;
 const _ = require('lodash');
 const through = require('through2');
+const Err = require('gulp-util').PluginError;
+const chalk = require('gulp-util').colors;
 
 // main module
-module.exports = (opt) => {
+module.exports = opt => {
   let options = {
     pluginName: '',
-    pluginFunction: null,
-    flushFunction: null,
+    pluginFn: null,
+    flushFn: null,
     streamSupport: false,
     bufferSupport: true,
     homeMade: false,
     showStack: false,
     showProperties: true,
     warnings: true,
-    packagePath: './'
+    packageJsonPath: './'
   };
 
   // is it a valid option?
@@ -27,32 +28,77 @@ module.exports = (opt) => {
 
   // if then override default options
   _.assign(options, opt);
+
+  // assign to local values for readability & performance?
   const name = options.pluginName;
-  const plugin = options.pluginFunction;
-  const flush = options.flushFunction;
-  const stream = options.streamSupport;
-  const buffer = options.bufferSupport;
-  const home_made = options.homeMade;
+  const pluginFn = options.pluginFn;
+  const flushFn = options.flushFn;
+  const streamSupport = options.streamSupport;
+  const bufferSupport = options.bufferSupport;
+  const homeMade = options.homeMade;
+  const warnings = options.warnings;
+  const errOptions = {
+    showStack: options.showStack,
+    showProperties: options.showProperties
+  };
+  const packageJsonPath = options.packageJsonPath;
 
   // is it a valid plugin name?
   if (_.isString(name) && !_.trim(name))
     throw new Err('UNDEFINED:',
-      'Pass a valid name', options);
+      'Pass a valid name', errOptions);
 
   // if not home made, then name should start with gulp-
-  if (!home_made && !_.startsWith(name, 'gulp-'))
+  if (!homeMade && !_.startsWith(name, 'gulp-'))
     throw new Err(name + ': ',
-      'Name should start with gulp-', options);
+      'Name should start with gulp-', errOptions);
 
   // is it a valid plugin function
-  if (!_.isFunction(plugin))
+  if (!_.isFunction(pluginFn))
     throw new Err(name + ': ',
-      'Pass a valid plugin function', options);
+      'Pass a valid plugin function', errOptions);
 
   // is it a valid flush function (or null)
-  if (flush && !_.isFunction(flush))
+  if (flushFn && !_.isFunction(flushFn))
     throw new Err(name + ': ',
-      'Pass a valid flush function', options);
+      'Pass a valid flush function', errOptions);
+
+  // If warnings enabled,
+  // Read package.json and log warnings
+  if (warnings) {
+    try {
+      const pkg = require(packageJsonPath + '/package.json');
+      const template = chalk.black.bgYellow;
+
+      // search gulpplugin keyword
+      if(!_.includes(pkg.keywords, 'gulpplugin')) {
+        console.log(template('Warning: Keyword `gulpplugin` ' +
+                              'is not found in your `package.json`'));
+      }
+
+      // plugin requires gulp as a dependency
+      if(_.includes(pkg.dependencies, 'gulp')) {
+        console.log(template('Warning: `gulp` is listed as a dependency ' +
+                              'in your `package.json`'));
+      }
+
+      // or peerDependency
+      if(_.includes(pkg.peerDependencies, 'gulp')) {
+        console.log(template('Warning: `gulp` is listed as a peer ' +
+                              'dependency in your `package.json`'));
+      }
+
+      // Your plugin must be tested
+      // This is just a blunt checking. Could be false possitive
+      if(!pkg.scripts.test) {
+        console.log(template('Warning: `test` command not found in your ' +
+                              '`package.json`. Have you write tests ' +
+                              'for your plugin?'));
+      }
+    } catch (e) {
+      throw new Err(name + ': Error reading package.json', e, errOptions);
+    }
+  }
 
   // return vinyl
   return through.obj(
@@ -64,21 +110,21 @@ module.exports = (opt) => {
         return done(null, file);
 
       // is stream supported?
-      if (file.isStream() && !stream)
+      if (file.isStream() && !streamSupport)
         return done(new Err(name + ': ',
-          'Stream not supported', options));
+          'Stream not supported', errOptions));
 
       // is buffer supported?
-      if (file.isBuffer() && !buffer)
+      if (file.isBuffer() && !bufferSupport)
         return done(new Err(name + ': ',
-          'Buffer not supported', options));
+          'Buffer not supported', errOptions));
 
       // unrwap plugin
       try {
-        plugin(file, encode);
+        pluginFn(file, encode);
       } catch (e) {
         return done(new Err(name + ': ',
-          e, options));
+          e, errOptions));
       }
 
       //pass to callback
@@ -86,12 +132,12 @@ module.exports = (opt) => {
     },
     //flush function
     done => {
-      if(_.isFunction(flush)) {
+      if(_.isFunction(flushFn)) {
         try {
-          flush();
+          flushFn();
         } catch (e) {
           return done(new Err(name + ': ',
-            e, options));
+            e, errOptions));
         }
       }
       return done();

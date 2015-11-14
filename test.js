@@ -37,7 +37,7 @@ test('name value', assert => {
   assert.doesNotThrow(() => {
     factory({
       pluginName: 'grunt-',
-      pluginFunction: () => {},
+      pluginFn: () => {},
       homeMade: true
     });
   }, /doesn't throw/, 'shoud not throw home-made plugin');
@@ -49,7 +49,7 @@ test('file object', assert => {
   assert.doesNotThrow(() => {
     factory({
       pluginName: 'gulp-',
-      pluginFunction: () => {}
+      pluginFn: () => {}
     })
     .write(fixture(null));
   }, /does not throw/, 'will just pass a null file');
@@ -57,7 +57,7 @@ test('file object', assert => {
   assert.throws(() => {
     factory({
       pluginName: 'gulp-',
-      pluginFunction: () => {}
+      pluginFn: () => {}
     })
     .write(fixture(new Stream()));
   }, /Stream not supported/, 'stream not supported');
@@ -65,7 +65,7 @@ test('file object', assert => {
   assert.throws(() => {
     factory({
       pluginName: 'gulp-',
-      pluginFunction: () => {},
+      pluginFn: () => {},
       bufferSupport: false
     })
     .write(fixture(new Buffer('buff')));
@@ -78,13 +78,13 @@ test('plugin function', assert => {
   assert.throws(() => {
     factory({
       pluginName: 'gulp-',
-      pluginFunction: {}
+      pluginFn: {}
     });
   }, /Pass a valid plugin function/, 'pass a valid plugin function');
 
   factory({
     pluginName: 'gulp-test',
-    pluginFunction: (file, encode) => {
+    pluginFn: (file, encode) => {
       const content = file.contents.toString(encode) + ' gipsum';
       file.contents = new Buffer(content);
     }
@@ -102,8 +102,8 @@ test('flush function', assert => {
   assert.throws(() => {
     factory({
       pluginName: 'gulp-',
-      pluginFunction: () => {},
-      flushFunction: {}
+      pluginFn: () => {},
+      flushFn: {}
     });
   }, /Pass a valid flush function/, 'pass a valid flush function');
 
@@ -111,8 +111,8 @@ test('flush function', assert => {
   assert.throws(() => {
     const plugin = factory({
       pluginName: 'gulp-test',
-      pluginFunction: () => {},
-      flushFunction: () => {
+      pluginFn: () => {},
+      flushFn: () => {
         throw new Error('Thrown from flush');
       }
     });
@@ -123,8 +123,8 @@ test('flush function', assert => {
   assert.doesNotThrow(() => {
     const plugin = factory({
       pluginName: 'gulp-test',
-      pluginFunction: () => {},
-      flushFunction: () => {
+      pluginFn: () => {},
+      flushFn: () => {
         //nothing up here. just passing
       }
     });
@@ -132,6 +132,26 @@ test('flush function', assert => {
     plugin.end();
   }, /Just passing through/, 'finish flushing if no error');
 
+
+  assert.end();
+});
+
+test('package.json', assert => {
+  assert.throws(() => {
+    factory({
+      pluginName: 'gulp-test',
+      pluginFn: () => {},
+      packageJsonPath: 'i/do/not/exisit'
+    });
+  }, /Cannot find module/, 'should throw for non exist package.json');
+
+  assert.doesNotThrow(() => {
+    factory({
+      pluginName: 'gulp-test',
+      pluginFn: () => {},
+      packageJsonPath: './'
+    });
+  }, /won't throw/, 'parse package.json');
 
   assert.end();
 });

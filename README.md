@@ -3,71 +3,65 @@
 a factory to create instant gulp-plugins and **enforcing [gulp plugin guidelines](https://github.com/gulpjs/gulp/blob/master/docs/writing-a-plugin/guidelines.md)**.
 
 ---
-Except its implementation (wrapped inside `through.obj(...)`), majority of gulp-plugins share the same boilerplate code. With `gulp-factory`, you can eliminate them all and just concentrate on your plugin instead - all by implicitly practicing **[gulp plugin guidelines](https://github.com/gulpjs/gulp/blob/master/docs/writing-a-plugin/guidelines.md)**.
-
-## Features
-Currently `gulp-factory` enforces / follows the below **[gulp plugin guidelines (gpg)](https://github.com/gulpjs/gulp/blob/master/docs/writing-a-plugin/guidelines.md)** by default:
-
-- [x] **gpg  6.0**: Does not throw errors inside a stream
-- [x] **gpg  7.0**: Prefix any errors (uses [PluginError](https://github.com/gulpjs/gulp-util#new-pluginerrorpluginname-message-options)) with the name of your plugin
-- [x] **gpg  8.0**: Throws error if your plugin name doesn't prefixed with "gulp-" (if `homeMade` option set to `true`, it won't)
-- [x] **gpg  9.1**: If `file.contents` is null (non-read), it ignores the file and pass it along
-- [x] **gpg  9.2**: If `file.contents` is a Stream and you don't support that (`streamSupport: false`), emits an error
-- [x] **gpg 10.0**: Does not pass the file object downstream until you are done with it
-- [x] **gpg 12.0**: Uses modules from gulp's recommended modules
-
-The following guidelines are covered as `warnings` (v 1.1.1).
-> Note: The below gulp guidelines are covered by reading your app's package.json.
-So, these warnings could be `false possitive`. If you don't want these warnings
-please disable warnings in `options` => `warnings: false`.
-
-- [x] **gpg 4.0**: Verifies whether your `package.json` has `test` command
-- [x] **gpg 5.0**: Verifies whether your `package.json` has `gulpplugin` as a keyword
-- [x] **gpg 13.0**: Verifies whether your plugin requires `gulp` as a dependency or peerDependency in your `package.json`
-
-## Examples
-- [Examples](https://github.com/dacodekid/gulp-factory/tree/master/examples)
-**TODO** : Add More Examples
-
-
-
-- a `test` command exists in `scripts` section
-- a keyword `gulpplugin` exists in `keywords` section
-- a word `gulp` exists in `dependencies` or `peerDependencies` section
-
-and outputs just a `console.log` warning message. These warnings could be false positive. For example, the below will
+Majority of gulp-plugins share the same boilerplate code (except its implementation that wrapped inside `through.obj(...)`). `gulp-factory` takes care of them all as per **[gulp plugin guidelines](https://github.com/gulpjs/gulp/blob/master/docs/writing-a-plugin/guidelines.md)** - including `error handling`. All you need is just a few line of code to complete your `gulp-plugins`.
 
 ## Installation
 ```sh
 npm install --save gulp-factory
 ```
 
+## Features
+Currently `gulp-factory` enforces / follows the below **[gulp plugin guidelines (gpg)](https://github.com/gulpjs/gulp/blob/master/docs/writing-a-plugin/guidelines.md)** by default:
+
+- [x] Does not throw errors inside a stream (6)
+- [x] Prefix any errors (uses [PluginError](https://github.com/gulpjs/gulp-util#new-pluginerrorpluginname-message-options)) with the name of your plugin (7)
+- [x] Throws error if your plugin name doesn't prefixed with "gulp-" (if `homeMade` option set to `true`, it won't) (8)
+- [x] If `file.contents` is null (non-read), it ignores the file and pass it along (9.1)
+- [x] If `file.contents` is a Stream and you don't support that (`streamSupport: false`), emits an error (9.2)
+- [x] Does not pass the file object  downstream until you are done with it (10)
+- [x] Uses modules from gulp's recommended modules (12)
+
+The following guidelines are covered as `warnings`.
+> Note: Below gulp guidelines are covered by reading your plugin/app's `package.json`. You could disable them with `warnings: false`.
+
+- [x] **gpg 4.0**: Verifies whether your `package.json` has `test` command
+- [x] **gpg 5.0**: Verifies whether your `package.json` has `gulpplugin` as a keyword
+- [x] **gpg 13.0**: Verifies whether your plugin requires `gulp` as a dependency or peerDependency in your `package.json`
+
 ## Usage
 Your plugins could be either a `module` or just a `function`.
 For example, you only need the below code to create a **completely working `front-matter` gulp-plugin**.
+
 ```javascript
 // index.js
-const gm = require('gray-matter');
-const factory = require('gulp-factory');
+var gm = require('gray-matter');
+var factory = require('gulp-factory');
 
-module.exports = options => {
+module.exports = function (options) {
   options = options || {};
 
-  function pluginFn(file, encode) {
-    const raw = gm(file.contents.toString(encode), options);
+	// plugin implementation
+  function plugin(file, encode) {
+    var raw = gm(file.contents.toString(encode), options);
     file.yml = raw.data || {};
     file.contents = new Buffer(raw.content);
   }
 
-  return factory('gulpfactory-gray-matter', pluginFn, { homeMade: true });
+  // return factory 
+  return factory({
+  	pluginName: 'gulpfactory-gray-matter',
+  	pluginFn: plugin,
+  	homeMade: true
+  });
 };
 ```
 
 Then from your `gulpfile.js`
+
 ```javascript
 // gulpfile.js
-const gulp = require('gulp');
-const grayMatter = require('./');
+var gulp = require('gulp');
+var grayMatter = require('./');
 
 gulp.task('default', function yaml() {
   return gulp.src('./fixtures/*.md')
@@ -80,37 +74,64 @@ or just turn any of your `function` into a `gulp-plugin`
 
 ```javascript
 // gulpfile.js
-const gulp = require('gulp');
-const gm = require('gray-matter');
-const factory = require('gulp-factory');
+var gulp = require('gulp');
+var gm = require('gray-matter');
+var factory = require('gulp-factory');
 
-function pluginFn(file, encode) {
-  const raw = gm(file.contents.toString(encode), {delims: '---'});
+// plugin implementation
+function plugin(file, encode) {
+  var raw = gm(file.contents.toString(encode), {delims: '---'});
   file.yml = raw.data || {};
   file.contents = new Buffer(raw.content);
 }
 
 gulp.task('default', function yaml() {
   return gulp.src('./fixtures/*.md')
-    .pipe(factory('gulpfactory-gray-matter', pluginFn, { homeMade: true }))
+    .pipe(factory({
+  	   pluginName: 'gulpfactory-gray-matter',
+	   pluginFn: pluginFn,
+  	   homeMade: true
+    })
     .pipe(gulp.dest('./fixtures/output'));
 })
 ```
 
 ## API
+
 ```javascript
-  factory(pluginName, pluginFunction[, factoryOptions])
+  factory (options)
 ```
-### Arguments
-#### pluginName
-Type: `string`, **required**
 
-Unless your plugin is in `homeMade` mode, your plugin must be prefixed with `gulp-`. Will throw error otherwise.
+### ```options```
 
-#### pluginFunction
-Type: `function`, **required**
+```javascript
+// default values
+{
+  pluginName: '',
+  pluginFn: null,
+  flushFn: null,
+  streamSupport: false,
+  bufferSupport: true,
+  homeMade: false,
+  showStack: false,
+  showProperties: true,
+  warnings: true,
+  packageJsonPath: './'
+}
+```
 
-By default, `gulp-factory` supplies only `file & encode` and it takes care of calling your `callback`. So, your plugin function could be in either one of the following signature.
+#### options.pluginName
+Type: `string`, **required**  
+Default: Empty
+
+> Unless `homeMade` mode enabled, plugin must be prefixed with `gulp-`. Will throw error otherwise.
+
+#### options.pluginFn ([file, encode])
+Type: `function`, **required**  
+Default: null
+
+
+> `gulp-factory` supplies only `file & encode` arguments (both optional) and takes care of calling your `callback`. So, your plugin function could be in either one of the following signature.
 
 ```javascript
 function pluginFunction() {
@@ -118,15 +139,17 @@ function pluginFunction() {
   // Just wrapping a function
 }
 ```
-Or
+
 ```javascript
+// or......
 function pluginFunction(file) {
   // Your file operations
   // Remember that you do not have to return anything or callback
 }
 ```
-Or
+
 ```javascript
+// or......
 function pluginFunction(file, encode) {
   // Your file/encode operations
   try {
@@ -140,76 +163,84 @@ function pluginFunction(file, encode) {
   }
 }
 ```
-In case if you have to throw an error, just `throw ` it as above and `gulp-factory` will wrap it with `PluginError` and prefix it with `pluginName`.
 
-#### factoryOptions
-Type: `object`, **optional**
+> If needed, just `throw` an error as above and `gulp-factory` will wrap it with `PluginError` and`pluginName` prefix.
 
-**Default values**
-```javascript
-{
-  showStack: false,
-  showProperties: true,
-  streamSupport: false,
-  bufferSupport: true,
-  homeMade: false,
-  warnings: true
-}
-```
+#### options.flushFn ()
+Type: `function`, **optional**  
+Default: null
 
-##### showStack
+> This function will be passed to `through2's` flush argument. Also will call it's `callback` function. If needed, just `throw` an error as above and `gulp-factory` will wrap it with `PluginError` and`pluginName` prefix.
+
+#### options.streamSupport
 Type: `boolean`  
 Default: `false`
 
-Refer [gulp-util's PluginError](https://github.com/gulpjs/gulp-util#new-pluginerrorpluginname-message-options)
+> Whether your plugin supports `stream`. Throws __PluginError__ if the `file` is `Stream`.
 
-##### showProperties
+#### options.bufferSupport
 Type: `boolean`  
 Default: `true`
 
-Refer [gulp-util's PluginError](https://github.com/gulpjs/gulp-util#new-pluginerrorpluginname-message-options)
+> Whether your plugin supports `buffer`. Throws __PluginError__ if the `file` is `Buffer`.
 
-##### streamSupport
+#### options.homeMade
 Type: `boolean`  
 Default: `false`
 
-Whether your plugin supports `stream`. Throws __PluginError__ if the `file` is `Stream`.
+> By default, `gulp-factory` operates in `factory` mode:- that requires all your plugins prefixed with `gulp-`. However if you would just like to test your plugins on your local repository or wrapping your existing functions as gulp-plugins and have no plan to list them under [gulp plugin registry](http://gulpjs.com/plugins/), just set `homeMade: true` and `gulp-factory` won't enforce `gulp-` prefix.
 
-##### bufferSupport
-Type: `boolean`  
-Default: `true`
-
-Whether your plugin supports `buffer`. Throws __PluginError__ if the `file` is `Buffer`.
-
-##### homeMade
+#### options.showStack
 Type: `boolean`  
 Default: `false`
 
-By default, `gulp-factory` operates in `factory` mode: which requires all your plugins prefixed with `gulp-`. However if you would just like to test your plugins on your local repository or wrapping your existing functions as gulp-plugins and have no plan to list them under [gulp plugin registry](http://gulpjs.com/plugins/), just set `homeMade: true` and `gulp-factory` won't enforce `gulp-` prefix.
+> Refer [gulp-util's PluginError](https://github.com/gulpjs/gulp-util#new-pluginerrorpluginname-message-options)
 
-##### warnings
+#### options.showProperties
 Type: `boolean`  
 Default: `true`
 
-To cover gulp guidelines 4, 5 & 13, `gulp-factory` will try to load your plugin/app's `package.json` and checks whether :
-- a `test` command exists in `scripts` section
+> Refer [gulp-util's PluginError](https://github.com/gulpjs/gulp-util#new-pluginerrorpluginname-message-options)
+
+#### options.warnings
+Type: `boolean`  
+Default: `true`
+
+> To cover gulp guidelines 4, 5 & 13, `gulp-factory` will try to load plugin's `package.json` from `packageJsonPath` and checks whether :
+
+> - a `test` command exists in `scripts` section
 - a keyword `gulpplugin` exists in `keywords` section
-- a word `gulp` exists in `dependencies` or `peerDependencies` section
+- `gulp` is required in `dependencies` or `peerDependencies` section
 
-and outputs just a `console.log` warning message. These warnings could be false positive. For example, the below will not show a warning
+> and outputs just a `console.log` warning message(s). The `test` warning could be a false positive. For example, the below will not show a warning
+
 ```json
-"test:mocha": "mocha *.js",
-"test": "npm run test:mocha"
+"test:tape": "tape *.js",
+"test": "npm run test:tape"
 ```
-but this one will.
+
+> but this one will.
+
 ```json
-"test:mocha": "mocha *.js",
+"test:tape": "tape *.js",
 ```
-If you find these warnings less useful for your (home-made) plugins, please turn it off by setting `warnings: false`.
+
+> If you find these warnings less useful for your (home-made) plugins, please turn it off by setting `warnings: false`.
+
+#### options.packageJsonPath
+Type: `string`  
+Default: `./`
+
+> Pass a relative path to your plugin/app's `package.json`.
 
 
 ## gulpUtil
-From `v0.3.1, gulp-factory` exposes [gulp-util](https://github.com/gulpjs/gulp-util) for your plugins' convenience.
+> `gulp-factory` exposes [gulp-util](https://github.com/gulpjs/gulp-util) for your plugins' convenience.
+
 ```javascript
 const gulpUtil = require('gulp-factory').gulpUtil;
 ```
+
+## Examples
+> [Examples](https://github.com/dacodekid/gulp-factory/tree/master/examples)  
+**TODO** : Add More Examples

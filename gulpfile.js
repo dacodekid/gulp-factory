@@ -11,6 +11,6 @@ gulp.task('default', function () {
 function plugin() {
   return factory({
     pluginName: 'gulp-',
-    pluginFunction: () => {}
+    pluginFn: () => {}
   });
 }
