@@ -135,23 +135,3 @@ test('flush function', assert => {
 
   assert.end();
 });
-
-test('package.json', assert => {
-  assert.throws(() => {
-    factory({
-      pluginName: 'gulp-test',
-      pluginFn: () => {},
-      packageJsonPath: 'i/do/not/exisit'
-    });
-  }, /Cannot find module/, 'should throw for non exist package.json');
-
-  assert.doesNotThrow(() => {
-    factory({
-      pluginName: 'gulp-test',
-      pluginFn: () => {},
-      packageJsonPath: './'
-    });
-  }, /Won't throw/, 'parse package.json');
-
-  assert.end();
-});
