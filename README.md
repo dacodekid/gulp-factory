@@ -2,8 +2,66 @@
 # gulp-factory
 a factory to create instant gulp-plugins and **enforcing [gulp plugin guidelines](https://github.com/gulpjs/gulp/blob/master/docs/writing-a-plugin/guidelines.md)**.
 
+## BREAKING CHANGE (v 2.0.0):
+For simplicity & flexibility, API has changed as of V2.0.0. Now you'll pass `pluginName` & `pluginFn` as a part of `options`.
+
+## v 2.0.0 Changes
+- API signature has been changed
+- An optional `flushFn` (refer [through2 API](https://github.com/rvagg/through2#api)) has been added.
+- Removed `options.warnings`, that covered guidelines: 4, 5 & 13, as they seems no purpose served.
+
 ---
+- [Intro](https://github.com/dacodekid/gulp-factory#intro)
+- [Quick Sample](https://github.com/dacodekid/gulp-factory#quick-sample)
+- [Installation](https://github.com/dacodekid/gulp-factory#installation)
+- [Features](https://github.com/dacodekid/gulp-factory#features)
+- [Usage](https://github.com/dacodekid/gulp-factory#usage)
+- [API](https://github.com/dacodekid/gulp-factory#api)
+  - [options](https://github.com/dacodekid/gulp-factory#options)
+    - [pluginName](https://github.com/dacodekid/gulp-factory#pluginname)
+    - [pluginFn](https://github.com/dacodekid/gulp-factory#pluginfn)
+    - [flushFn](https://github.com/dacodekid/gulp-factory#flushfn)
+    - [streamSupport](https://github.com/dacodekid/gulp-factory#streamsupport)
+    - [bufferSupport](https://github.com/dacodekid/gulp-factory#buffersupport)
+    - [homeMade](https://github.com/dacodekid/gulp-factory#homemade)
+    - [showStack](https://github.com/dacodekid/gulp-factory#showstack)
+    - [showProperties](https://github.com/dacodekid/gulp-factory#showproperties)
+- [gulpUtil](https://github.com/dacodekid/gulp-factory#gulputil)
+- [Examples](https://github.com/dacodekid/gulp-factory#examples)
+
+# Intro
 Majority of gulp-plugins share the same boilerplate code (except its implementation that wrapped inside `through.obj(...)`). `gulp-factory` takes care of them all as per **[gulp plugin guidelines](https://github.com/gulpjs/gulp/blob/master/docs/writing-a-plugin/guidelines.md)** - including `error handling`. All you need is just a few line of code to complete your `gulp-plugins`.
+
+## Quick Sample
+
+
+```javascript
+// a fully functional plugin
+var factory = require ('gulp-factory');
+
+function plugin() {
+  return factory({
+    pluginName: 'gulp-text-changer',
+    pluginFn: (file) => {
+      file.contents = new Buffer('changed from plugin');
+    }
+  });
+}
+```
+
+
+```javascript
+// and calling from gulpfile.js
+var changer = require ('./plugins/changer.js');
+var gulp = require('gulp');
+
+gulp.task('default', function () {
+  return gulp.src('./fixtures/*.txt')
+    .pipe(changer())
+    .pipe(gulp.dest('dist'));
+});
+```
+
 
 ## Installation
 ```sh
@@ -20,13 +78,6 @@ Currently `gulp-factory` enforces / follows the below **[gulp plugin guidelines 
 - [x] If `file.contents` is a Stream and you don't support that (`streamSupport: false`), emits an error (9.2)
 - [x] Does not pass the file object  downstream until you are done with it (10)
 - [x] Uses modules from gulp's recommended modules (12)
-
-The following guidelines are covered as `warnings`.
-> Note: Below gulp guidelines are covered by reading your plugin/app's `package.json`. You could disable them with `warnings: false`.
-
-- [x] **gpg 4.0**: Verifies whether your `package.json` has `test` command
-- [x] **gpg 5.0**: Verifies whether your `package.json` has `gulpplugin` as a keyword
-- [x] **gpg 13.0**: Verifies whether your plugin requires `gulp` as a dependency or peerDependency in your `package.json`
 
 ## Usage
 Your plugins could be either a `module` or just a `function`.
@@ -47,7 +98,7 @@ module.exports = function (options) {
     file.contents = new Buffer(raw.content);
   }
 
-  // return factory 
+  // return factory
   return factory({
   	pluginName: 'gulpfactory-gray-matter',
   	pluginFn: plugin,
@@ -114,9 +165,7 @@ gulp.task('default', function yaml() {
   bufferSupport: true,
   homeMade: false,
   showStack: false,
-  showProperties: true,
-  warnings: true,
-  packageJsonPath: './'
+  showProperties: true
 }
 ```
 
@@ -131,7 +180,7 @@ Type: `function`, **required**
 Default: null
 
 
-> `gulp-factory` supplies only `file & encode` arguments (both optional) and takes care of calling your `callback`. So, your plugin function could be in either one of the following signature.
+> `gulp-factory` supplies only `file & encode` arguments (both are optional) and takes care of calling your `callback`. So, your plugin function could be in either one of the following signature.
 
 ```javascript
 function pluginFunction() {
@@ -202,38 +251,6 @@ Default: `true`
 
 > Refer [gulp-util's PluginError](https://github.com/gulpjs/gulp-util#new-pluginerrorpluginname-message-options)
 
-#### options.warnings
-Type: `boolean`  
-Default: `true`
-
-> To cover gulp guidelines 4, 5 & 13, `gulp-factory` will try to load plugin's `package.json` from `packageJsonPath` and checks whether :
-
-> - a `test` command exists in `scripts` section
-- a keyword `gulpplugin` exists in `keywords` section
-- `gulp` is required in `dependencies` or `peerDependencies` section
-
-> and outputs just a `console.log` warning message(s). The `test` warning could be a false positive. For example, the below will not show a warning
-
-```json
-"test:tape": "tape *.js",
-"test": "npm run test:tape"
-```
-
-> but this one will.
-
-```json
-"test:tape": "tape *.js",
-```
-
-> If you find these warnings less useful for your (home-made) plugins, please turn it off by setting `warnings: false`.
-
-#### options.packageJsonPath
-Type: `string`  
-Default: `./`
-
-> Pass a relative path to your plugin/app's `package.json`.
-
-
 ## gulpUtil
 > `gulp-factory` exposes [gulp-util](https://github.com/gulpjs/gulp-util) for your plugins' convenience.
 
@@ -242,5 +259,4 @@ const gulpUtil = require('gulp-factory').gulpUtil;
 ```
 
 ## Examples
-> [Examples](https://github.com/dacodekid/gulp-factory/tree/master/examples)  
-**TODO** : Add More Examples
+> [Examples](https://github.com/dacodekid/gulp-factory-examples)  

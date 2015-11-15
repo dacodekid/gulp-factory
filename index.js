@@ -4,7 +4,6 @@
 const _ = require('lodash');
 const through = require('through2');
 const Err = require('gulp-util').PluginError;
-const chalk = require('gulp-util').colors;
 
 // main module
 module.exports = opt => {
@@ -16,9 +15,7 @@ module.exports = opt => {
     bufferSupport: true,
     homeMade: false,
     showStack: false,
-    showProperties: true,
-    warnings: true,
-    packageJsonPath: './'
+    showProperties: true
   };
 
   // is it a valid option?
@@ -36,12 +33,10 @@ module.exports = opt => {
   const streamSupport = options.streamSupport;
   const bufferSupport = options.bufferSupport;
   const homeMade = options.homeMade;
-  const warnings = options.warnings;
   const errOptions = {
     showStack: options.showStack,
     showProperties: options.showProperties
   };
-  const packageJsonPath = options.packageJsonPath;
 
   // is it a valid plugin name?
   if (_.isString(name) && !_.trim(name))
@@ -62,43 +57,6 @@ module.exports = opt => {
   if (flushFn && !_.isFunction(flushFn))
     throw new Err(name + ': ',
       'Pass a valid flush function', errOptions);
-
-  // If warnings enabled,
-  // Read package.json and log warnings
-  if (warnings) {
-    try {
-      const pkg = require(packageJsonPath + '/package.json');
-      const template = chalk.black.bgYellow;
-
-      // search gulpplugin keyword
-      if(!_.includes(pkg.keywords, 'gulpplugin')) {
-        console.log(template('Warning: Keyword `gulpplugin` ' +
-                              'is not found in your `package.json`'));
-      }
-
-      // plugin requires gulp as a dependency
-      if(_.includes(pkg.dependencies, 'gulp')) {
-        console.log(template('Warning: `gulp` is listed as a dependency ' +
-                              'in your `package.json`'));
-      }
-
-      // or peerDependency
-      if(_.includes(pkg.peerDependencies, 'gulp')) {
-        console.log(template('Warning: `gulp` is listed as a peer ' +
-                              'dependency in your `package.json`'));
-      }
-
-      // Your plugin must be tested
-      // This is just a blunt checking. Could be false possitive
-      if(!pkg.scripts.test) {
-        console.log(template('Warning: `test` command not found in your ' +
-                              '`package.json`. Have you write tests ' +
-                              'for your plugin?'));
-      }
-    } catch (e) {
-      throw new Err(name + ': Error reading package.json', e, errOptions);
-    }
-  }
 
   // return vinyl
   return through.obj(
