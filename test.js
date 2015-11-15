@@ -151,7 +151,7 @@ test('package.json', assert => {
       pluginFn: () => {},
       packageJsonPath: './'
     });
-  }, /won't throw/, 'parse package.json');
+  }, /Won't throw/, 'parse package.json');
 
   assert.end();
 });

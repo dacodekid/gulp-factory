@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/dacodekid/gulp-factory.svg?branch=master)](https://travis-ci.org/dacodekid/gulp-factory)
-# gulp-factory
+# gulp-factory (v2.0.0)
 a factory to create instant gulp-plugins and **enforcing [gulp plugin guidelines](https://github.com/gulpjs/gulp/blob/master/docs/writing-a-plugin/guidelines.md)**.
 
 ## BREAKING CHANGE (v 2.0.0):
