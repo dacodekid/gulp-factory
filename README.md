@@ -47,6 +47,8 @@ function plugin() {
     }
   });
 }
+
+module.exports = plugin;
 ```
 
 
