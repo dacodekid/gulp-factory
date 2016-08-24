@@ -90,7 +90,7 @@ module.exports = opt => {
     },
     //flush function
     done => {
-      if(_.isFunction(flushFn)) {
+      if (_.isFunction(flushFn)) {
         try {
           flushFn();
         } catch (e) {
@@ -105,3 +105,4 @@ module.exports = opt => {
 
 // export gulp-util for convenience
 module.exports.gulpUtil = require('gulp-util');
+module.exports._ = require('lodash');

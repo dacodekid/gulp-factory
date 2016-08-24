@@ -14,9 +14,12 @@ test('factory object', assert => {
   assert.equal(typeof factory.gulpUtil, 'object',
     'should expose gulp-util module');
 
+  assert.equal(typeof factory._, 'function',
+    'should expose lodash module');
+
   assert.throws(() => {
     factory('');
-  },/Pass a valid option/, 'pass a valid option');
+  }, /Pass a valid option/, 'pass a valid option');
 
   assert.end();
 });
@@ -48,27 +51,27 @@ test('name value', assert => {
 test('file object', assert => {
   assert.doesNotThrow(() => {
     factory({
-      pluginName: 'gulp-',
-      pluginFn: () => {}
-    })
-    .write(fixture(null));
+        pluginName: 'gulp-',
+        pluginFn: () => {}
+      })
+      .write(fixture(null));
   }, /does not throw/, 'will just pass a null file');
 
   assert.throws(() => {
     factory({
-      pluginName: 'gulp-',
-      pluginFn: () => {}
-    })
-    .write(fixture(new Stream()));
+        pluginName: 'gulp-',
+        pluginFn: () => {}
+      })
+      .write(fixture(new Stream()));
   }, /Stream not supported/, 'stream not supported');
 
   assert.throws(() => {
     factory({
-      pluginName: 'gulp-',
-      pluginFn: () => {},
-      bufferSupport: false
-    })
-    .write(fixture(new Buffer('buff')));
+        pluginName: 'gulp-',
+        pluginFn: () => {},
+        bufferSupport: false
+      })
+      .write(fixture(new Buffer('buff')));
   }, /Buffer not supported/, 'buffer not supported');
 
   assert.end();
@@ -83,17 +86,17 @@ test('plugin function', assert => {
   }, /Pass a valid plugin function/, 'pass a valid plugin function');
 
   factory({
-    pluginName: 'gulp-test',
-    pluginFn: (file, encode) => {
-      const content = file.contents.toString(encode) + ' gipsum';
-      file.contents = new Buffer(content);
-    }
-  })
-  .on('data', file => {
-    assert.equal(file.contents.toString(),
-      'Lorem ipsum gipsum', 'transform funtion should write data');
-  })
-  .write(fixture(new Buffer('Lorem ipsum')));
+      pluginName: 'gulp-test',
+      pluginFn: (file, encode) => {
+        const content = file.contents.toString(encode) + ' gipsum';
+        file.contents = new Buffer(content);
+      }
+    })
+    .on('data', file => {
+      assert.equal(file.contents.toString(),
+        'Lorem ipsum gipsum', 'transform funtion should write data');
+    })
+    .write(fixture(new Buffer('Lorem ipsum')));
 
   assert.end();
 });

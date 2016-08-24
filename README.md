@@ -260,5 +260,12 @@ Default: `true`
 const gulpUtil = require('gulp-factory').gulpUtil;
 ```
 
+## _ (lodash)
+> `gulp-factory` exposes [lodash](https://lodash.com/) for your plugins' convenience.
+
+```javascript
+const _ = require('gulp-factory')._;
+```
+
 ## Examples
 > [Examples](https://github.com/dacodekid/gulp-factory-examples)  
